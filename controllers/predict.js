@@ -1,4 +1,3 @@
-
 // Function to fetch and insert HTML components
 async function loadComponent(url, containerId) {
     try {
@@ -21,7 +20,7 @@ async function loadComponent(url, containerId) {
 
 // Function to set up form handlers
 function setupFormHandlers() {
-    const form = document.getElementById('stroke-predict-form');
+    const form = document.getElementById('heart-predict-form');
     if (form) {
         form.addEventListener('submit', handleFormSubmit);
     }
@@ -49,9 +48,25 @@ function handleFormSubmit(event) {
     const formData = new FormData(event.target);
     const formObject = Object.fromEntries(formData.entries());
     
-    // In a real implementation, you would send this data to your backend
-    // For now, we'll simulate a response and display the result
-    simulatePrediction(formObject);
+    // Send data to backend for prediction
+    fetch('/api/predict', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formObject)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.error) {
+            console.error('Prediction error:', result.error);
+        } else {
+            displayResults(formObject, result.risk_score);
+        }
+    })
+    .catch(error => {
+        console.error('Error during prediction:', error);
+    });
 }
 
 // Function to simulate prediction (this would normally be done by the backend)
